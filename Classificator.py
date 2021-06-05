@@ -237,7 +237,7 @@ class Classificator:
             self.dockwidget.comboBox.addItems(TextComboBox)
 
             # Словарик с классами
-            with open("C:\\Users\\anast\\AppData\\Roaming\\QGIS\\QGIS3\\profiles\\default\\python\\plugins\\classificator\\dictionary.json", "r") as read_file:
+            with open(os.path.dirname(os.path.abspath(__file__))+'\\dictionary.json', "r") as read_file:
                 dictionary = json.load(read_file)
             print(dictionary)
             for n in dictionary:
