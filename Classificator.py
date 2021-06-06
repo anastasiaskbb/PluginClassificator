@@ -180,7 +180,7 @@ class Classificator:
 
     def onClosePlugin(self):
         """Cleanup necessary items here when plugin dockwidget is closed"""
-        self.dockwidget.comboBox.clear()
+        
         # print "** CLOSING Classificator"
 
         # disconnects
@@ -232,9 +232,7 @@ class Classificator:
             self.iface.addDockWidget(Qt.TopDockWidgetArea, self.dockwidget)
             self.dockwidget.show()
 
-            TextComboBox = ['Гаражи', 'АЗС', 'Блокированные жилые дома', 'Индивидуальные жилые дома',
-                            'Многоквартирные жилые дома', 'Иные жилые дома', 'Cадоводство']
-            self.dockwidget.comboBox.addItems(TextComboBox)
+
 
             # Словарик с классами
             with open(os.path.dirname(os.path.abspath(__file__))+'\\dictionary.json', "r") as read_file:
@@ -243,50 +241,103 @@ class Classificator:
             for n in dictionary:
                 print(n)
 
-            self.dockwidget.listWidget.addItems(dictionary['Гаражи'])
 
-            def cls():
-                self.dockwidget.pushButton_3.setEnabled(False)
+            # self.dockwidget.listWidget.addItems(dictionary['Гаражи'])
+            
+
+            self.dockwidget.pushButton_3.setEnabled(False)
+            self.dockwidget.pushButton_7.setEnabled(False)   
+
+            def cls():     
                 self.dockwidget.listWidget.clear()
-                for key in dictionary.keys():
-                    print(key)
-                    print(self.dockwidget.comboBox.currentText())
-                    if key == self.dockwidget.comboBox.currentText():
-                        self.dockwidget.listWidget.addItems(dictionary[key])
-                        print('Work')
-                        # for word in dictionary[key]:
-                        # self.dockwidget.tableView.append(word)
-                        break
+                mass = []
+                print("----------------------")
+                # for key, words in dictionary.items():
+                with open(os.path.dirname(os.path.abspath(__file__))+'\\dictionary.json', "r") as read_file:
+                    dictionary = json.load(read_file)
+                    print(dictionary)
+                    for n in dictionary:
+                        print(n)
+                self.dockwidget.listWidget.addItems(dictionary.keys()) 
+                print("----------------------")
+                # self.dockwidget.listWidget.addItems(key)
+ 
+            def cls_2():
+                
+                self.dockwidget.listWidget_2.clear()
+                # for key in dictionary.keys():
+                print(self.dockwidget.listWidget.currentItem().text())
+                key = str(self.dockwidget.listWidget.currentItem().text())
+                
+                words = dictionary.get(key, )
+                mass = []
+                for word in words:
+                    mass.append(word)
+                self.dockwidget.listWidget_2.addItems(mass)
+                        
+                         
+            self.dockwidget.pushButton_5.clicked.connect(cls)
+            self.dockwidget.listWidget.itemClicked.connect(cls_2)
+            
 
+            def deleteEnabled_1():
+                self.dockwidget.pushButton_7.setEnabled(True)
 
-            self.dockwidget.comboBox.currentTextChanged.connect(cls)
-
-
-            def deleteEnabled():
+            def deleteEnabled_2():
                 self.dockwidget.pushButton_3.setEnabled(True)
 
-            self.dockwidget.listWidget.itemClicked.connect(deleteEnabled)
+            self.dockwidget.listWidget.itemClicked.connect(deleteEnabled_1)
+            self.dockwidget.listWidget_2.itemClicked.connect(deleteEnabled_2)
+
 
             def deleteItem():
-                item = self.dockwidget.listWidget.selectedItems()
+                item = self.dockwidget.listWidget_2.selectedItems()
                 for i in item:
-                    self.dockwidget.listWidget.takeItem(self.dockwidget.listWidget.row(i))
-                    dictionary[self.dockwidget.comboBox.currentText()].remove(i.text())
+                    self.dockwidget.listWidget_2.takeItem(self.dockwidget.listWidget_2.row(i))
+                    dictionary[self.dockwidget.listWidget.currentItem().text()].remove(i.text())
 
                 with open(os.path.dirname(os.path.abspath(__file__))+'\\dictionary.json', "w", encoding = 'utf-8') as write_file:
                     json.dump(dictionary, write_file, ensure_ascii=False )
 
 
-
             self.dockwidget.pushButton_3.clicked.connect(deleteItem)
 
             def createItem():
-                self.dockwidget.listWidget.addItem(self.dockwidget.lineEdit.text())
-                dictionary[self.dockwidget.comboBox.currentText()].append(self.dockwidget.lineEdit.text())
-                with open(os.path.dirname(os.path.abspath(__file__))+'\\dictionary.json', "w", encoding = 'utf-8') as write_file:
-                    json.dump(dictionary, write_file, ensure_ascii=False)
+                if self.dockwidget.lineEdit.text()!='':
+                    self.dockwidget.listWidget_2.addItem(self.dockwidget.lineEdit.text())
+                    dictionary[self.dockwidget.listWidget.currentItem().text()].append(self.dockwidget.lineEdit.text())
+                    with open(os.path.dirname(os.path.abspath(__file__))+'\\dictionary.json', "w", encoding = 'utf-8') as write_file:
+                        json.dump(dictionary, write_file, ensure_ascii=False)
 
             self.dockwidget.pushButton_2.clicked.connect(createItem)
+
+
+            #Удаление класса
+            def deleteItem_2():
+                item = self.dockwidget.listWidget.selectedItems()
+                for i in item:
+                    word = self.dockwidget.listWidget.currentItem().text()
+                    del dictionary[word]
+                    self.dockwidget.listWidget.takeItem(self.dockwidget.listWidget.row(i))
+                self.dockwidget.listWidget_2.clear()
+
+                with open(os.path.dirname(os.path.abspath(__file__))+'\\dictionary.json', "w", encoding = 'utf-8') as write_file:
+                    json.dump(dictionary, write_file, ensure_ascii=False )
+
+            self.dockwidget.pushButton_7.clicked.connect(deleteItem_2)
+
+
+            #Создание класса
+            def createItem_2():
+                if self.dockwidget.lineEdit_2.text()!='':
+                    self.dockwidget.listWidget.addItem(self.dockwidget.lineEdit_2.text())
+                    dictionary[self.dockwidget.lineEdit_2.text()]=[]
+                    with open(os.path.dirname(os.path.abspath(__file__))+'\\dictionary.json', "w", encoding = 'utf-8') as write_file:
+                        json.dump(dictionary, write_file, ensure_ascii=False)
+
+            self.dockwidget.pushButton_6.clicked.connect(createItem_2)
+
+
 
             def openFile():
                 dir = QtWidgets.QFileDialog.getOpenFileName()[0]
@@ -333,7 +384,7 @@ class Classificator:
 
                     df['Класс'] = Class  # добавляем столбец в датасет
 
-                    df.to_csv(dir+r".csv", index=False, sep=";")  # сохраняем его
+                    df.to_csv(dir+r".shp", index=False, sep=";")  # сохраняем его
 
             self.dockwidget.pushButton_4.clicked.connect(start)
 
