@@ -384,7 +384,7 @@ class Classificator:
 
                     df['Класс'] = Class  # добавляем столбец в датасет
 
-                    df.to_csv(dir+r".shp", index=False, sep=";")  # сохраняем его
+                    df.to_csv(dir+r".csv", index=False, sep=";")  # сохраняем его
 
             self.dockwidget.pushButton_4.clicked.connect(start)
 
